@@ -15,13 +15,13 @@ public class AdminConfigController {
     private AdminConfigRepository adminConfigRepository;
 
 
-    @PutMapping
-    public AdminConfig updateConfig(@RequestBody AdminConfig config) {
+    @PutMapping("/{pageNumber}")
+    public AdminConfig updateConfig(@PathVariable int pageNumber, @RequestBody AdminConfig config) {
         AdminConfig existingConfig = adminConfigRepository
-                .findByPageNumbers(List.of(config.getPageNumber()))
+                .findByPageNumbers(List.of(pageNumber))
                 .stream()
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("Config not found for pageNumber: " + config.getPageNumber()));
+                .orElseThrow(() -> new RuntimeException("Config not found for pageNumber: " + pageNumber));
 
         existingConfig.setComponentName(config.getComponentName());
         return adminConfigRepository.save(existingConfig);
