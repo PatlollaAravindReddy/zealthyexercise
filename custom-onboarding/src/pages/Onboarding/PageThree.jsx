@@ -27,19 +27,14 @@ function PageThree() {
   }, []);
 
   const handleSubmit = async () => {
-    try {
       const response = await submitData(userData);
       if (response.success) {
         setSubmitStatus('success');
         setErrorMessage('');
       } else {
         setSubmitStatus('failure');
-        setErrorMessage(response.error || 'An unknown error occurred.');
+        setErrorMessage(response.message || 'An unknown error occurred.');
       }
-    } catch (error) {
-      setSubmitStatus('failure');
-      setErrorMessage(error.message || 'An unknown error occurred.');
-    }
     setOpenDialog(true);
   };
 
@@ -51,6 +46,8 @@ function PageThree() {
 
   const handleDialogClose = () => {
     setOpenDialog(false);
+    setUserData('');
+    setStep(1);
   };
 
   return (

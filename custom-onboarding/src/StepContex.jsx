@@ -8,18 +8,13 @@ const StepContext = () => {
     const [currentStep, setStep] = useState(1);
     const [userData, setUserData] = useState([]);
     const [finalData, setFinalData] = useState([]);
+     const [ setSubmitStatus] = useState('');
+      const [ setErrorMessage] = useState('');
     const submitData = async () => {
-        try {
-            const { success, message } = await submitUserData(userData);
-            setSubmitStatus(success ? 'success' : 'failure');
-            setErrorMessage(success ? '' : message || 'Something went wrong. Please try again.');
-        } catch (error) {
-            setSubmitStatus('failure');
-            setErrorMessage(error.message || 'An unknown error occurred. Please try again.');
-        }
-        setUserData('');
-        setStep(1);
-    };
+          const { success, message } = await submitUserData(userData);
+          return { success, message };
+      };
+
     return (
         <div>
             <multiStepContext.Provider value={{ currentStep, setStep, userData, setUserData, finalData, setFinalData, submitData }}>

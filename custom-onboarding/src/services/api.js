@@ -64,11 +64,18 @@ export const submitUserData = async (userData) => {
     const response = await axios.post(API_URL_USER, userData);
     console.log(userData);
     if (response.status === 200) {
-      return { success: true, data: response.data };
+      return { success: true, message: response.data };
     } else {
       return { success: false, message: response.data };
     }
   } catch (error) {
-    return { success: false, message: error.message };
+    if (error.response) {
+      return { 
+        success: false, 
+        message: error.response.data
+      };
+    } else {
+      return { success: false, message: 'No response from server. Please try again.' };
+    }
   }
 };
