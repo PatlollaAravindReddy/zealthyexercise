@@ -158,7 +158,7 @@ function PageOne() {
         <DialogContent>
           <Typography variant="body1">
             {submitStatus === 'success'
-              ? 'Your data has been successfully submitted!'
+              ? 'Email Id successfully submitted!'
               : errorMessage}
           </Typography>
         </DialogContent>
