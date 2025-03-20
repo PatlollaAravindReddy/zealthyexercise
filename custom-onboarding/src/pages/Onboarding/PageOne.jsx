@@ -1,6 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { Button, TextField, Stepper, StepLabel, Step, Dialog, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
 import { multiStepContext } from '../../StepContex';
+import { loadSessionData } from '../../utils/sessionUtils';
 import PageTwo from './PageTwo';
 import PageThree from './PageThree';
 import './PageOne.css';
@@ -17,16 +18,7 @@ function PageOne() {
   const [formValid, setFormValid] = useState(false);
 
   useEffect(() => {
-    const storedUserData = sessionStorage.getItem('sessionData');
-    const storedStep = sessionStorage.getItem('sessionStep');
-    const userId = sessionStorage.getItem('sessionId');
-    if (storedUserData && storedStep && userId) {
-      const parsedData = JSON.parse(storedUserData);
-      const parsedStep = JSON.parse(storedStep);
-      setUserData({ id: userId });
-      setUserData(parsedData);
-      setStep(parsedStep.step);
-    }
+    loadSessionData(setUserData, setStep);
   }, []);
 
 

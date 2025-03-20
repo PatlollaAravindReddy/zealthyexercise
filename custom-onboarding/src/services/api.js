@@ -16,7 +16,6 @@ const apiCall = async (url, config) => {
 export const getOnboardingConfig = async () => {
   try {
     const response = await axios.get(`${API_URL}/page2and3`);
-    console.log(response.data);
     return response.data;
   } catch (error) {
     console.error('Error fetching onboarding configuration:', error);
@@ -38,7 +37,6 @@ export const saveOnboardingConfig = async (page2Components, page3Components) => 
     );
 
     const [page2Response, page3Response] = await Promise.all(savePromises);
-    console.log('Configuration saved successfully for Page 2 and Page 3:', page2Response, page3Response);
     return { page2Config: page2Response, page3Config: page3Response };
   } catch (error) {
     console.error('Failed to save configurations:', error);
@@ -62,7 +60,6 @@ export const fetchUserData = async () => {
 export const submitUserData = async (userData) => {
   try {
     const response = await axios.post(API_URL_USER, userData);
-    console.log(userData);
     if (response.status === 200) {
       return { success: true, message: response.data };
     } else {
@@ -83,7 +80,6 @@ export const submitUserData = async (userData) => {
 export const submitUserDetails = async (userData) => {
   try {
     const response = await axios.patch(API_URL_USER, userData);
-    console.log(userData);
     if (response.status === 200) {
       return { success: true, message: response.data };
     } else {

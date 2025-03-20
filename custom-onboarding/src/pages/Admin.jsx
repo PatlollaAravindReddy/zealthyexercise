@@ -51,7 +51,6 @@ const Admin = () => {
   const handleSave = async () => {
     try {
       const savedConfig = await saveOnboardingConfig(page2Components, page3Components);
-      console.log('Saved Configuration:', savedConfig);
       setSaveStatus('success');
       setChangesMade(false);
     } catch (error) {

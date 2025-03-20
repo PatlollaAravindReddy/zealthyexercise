@@ -2,6 +2,7 @@ import React, { useContext, useState, useEffect } from 'react';
 import { Button, TextField, Typography, Grid } from '@mui/material';
 import { multiStepContext } from '../../StepContex';
 import { getOnboardingConfig } from '../../services/api';
+import { loadSessionData } from '../../utils/sessionUtils';
 import './PageTwo.css';
 
 function PageTwo() {
@@ -19,6 +20,7 @@ function PageTwo() {
       } catch (error) {
         console.error('Failed to fetch configuration:', error);
       }
+      loadSessionData(setUserData, setStep);
     };
 
     fetchConfig();

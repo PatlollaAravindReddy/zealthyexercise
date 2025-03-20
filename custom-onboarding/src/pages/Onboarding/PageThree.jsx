@@ -2,6 +2,7 @@ import React, { useContext, useState, useEffect } from 'react';
 import { Button, TextField, Typography, Grid, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import { multiStepContext } from '../../StepContex';
 import { getOnboardingConfig, submitUserDetails } from '../../services/api';
+import { loadSessionData } from '../../utils/sessionUtils';
 
 function PageThree() {
   const { setStep, userData, setUserData } = useContext(multiStepContext);
@@ -21,13 +22,17 @@ function PageThree() {
       } catch (error) {
         console.error('Failed to fetch configuration:', error);
       }
+      loadSessionData(setUserData, setStep);
+      setUserData(prevData => ({
+        ...prevData,
+        id: JSON.parse(sessionStorage.getItem('sessionId'))?.id
+      }));
     };
 
     fetchConfig();
   }, []);
 
   const handleSubmit = async () => {
-    setUserData({ id: JSON.parse(sessionStorage.getItem('sessionId')).id });
     const response = await submitUserDetails(userData);
     if (response.success) {
       setSubmitStatus('success');
