@@ -8,12 +8,12 @@ const StepContext = () => {
     const [currentStep, setStep] = useState(1);
     const [userData, setUserData] = useState([]);
     const [finalData, setFinalData] = useState([]);
-     const [ setSubmitStatus] = useState('');
-      const [ setErrorMessage] = useState('');
+    const [setSubmitStatus] = useState('');
+    const [setErrorMessage] = useState('');
     const submitData = async () => {
-          const { success, message } = await submitUserData(userData);
-          return { success, message };
-      };
+        const { success, message } = await submitUserData(userData);
+        return { success, message };
+    };
 
     return (
         <div>

@@ -1,19 +1,34 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { Button, TextField, Stepper, StepLabel, Step } from '@mui/material';
+import { Button, TextField, Stepper, StepLabel, Step, Dialog, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
 import { multiStepContext } from '../../StepContex';
 import PageTwo from './PageTwo';
 import PageThree from './PageThree';
 import './PageOne.css';
 
 function PageOne() {
-  const { currentStep, setStep, userData, setUserData } = useContext(multiStepContext);
-
+  const { currentStep, setStep, userData, setUserData, submitData } = useContext(multiStepContext);
+  const [submitStatus, setSubmitStatus] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
   const [errors, setErrors] = useState({
     email: '',
     password: '',
   });
-
+  const [openDialog, setOpenDialog] = useState(false);
   const [formValid, setFormValid] = useState(false);
+
+  useEffect(() => {
+    const storedUserData = sessionStorage.getItem('sessionData');
+    const storedStep = sessionStorage.getItem('sessionStep');
+    const userId = sessionStorage.getItem('sessionId');
+    if (storedUserData && storedStep && userId) {
+      const parsedData = JSON.parse(storedUserData);
+      const parsedStep = JSON.parse(storedStep);
+      setUserData({ id: userId });
+      setUserData(parsedData);
+      setStep(parsedStep.step);
+    }
+  }, []);
+
 
   const validateEmail = (email) => {
     const regex = /\S+@\S+\.\S+/;
@@ -23,6 +38,40 @@ function PageOne() {
   const validatePassword = (password) => {
     return (password || "").length >= 6;
   };
+
+  const handleSubmit = async () => {
+    const response = await submitData(userData);
+    if (response.success) {
+      const userStepToSave = {
+        step: 2,
+      };
+      const userIdToSave = {
+        id: response.message,
+      };
+      const { password, ...safeUserData } = userData;
+      sessionStorage.setItem('sessionId', JSON.stringify(userIdToSave));
+      sessionStorage.setItem('sessionStep', JSON.stringify(userStepToSave));
+      sessionStorage.setItem('sessionData', JSON.stringify(safeUserData));
+      setSubmitStatus('success');
+      setErrorMessage('');
+      userData['id'] = response.message;
+    } else {
+      setSubmitStatus('failure');
+      setErrorMessage(response.message || 'An unknown error occurred.');
+    }
+    setOpenDialog(true);
+  };
+
+  const handleDialogClose = () => {
+    setOpenDialog(false);
+    if (submitStatus === 'success') {
+      setStep(2);
+    } else {
+      setUserData({ email: '', password: '' });
+      setStep(1);
+    }
+  };
+
 
   const handleEmailChange = (e) => {
     const email = e.target.value;
@@ -74,9 +123,10 @@ function PageOne() {
               error={!!errors.password}
               helperText={errors.password}
             />
+
             <Button
               variant="contained"
-              onClick={() => setStep(2)}
+              onClick={handleSubmit}
               disabled={!formValid}
             >
               Next
@@ -103,6 +153,19 @@ function PageOne() {
       </Stepper>
 
       {showStep(currentStep)}
+      <Dialog open={openDialog} onClose={handleDialogClose}>
+        <DialogTitle>{submitStatus === 'success' ? 'Success' : 'Failure'}</DialogTitle>
+        <DialogContent>
+          <Typography variant="body1">
+            {submitStatus === 'success'
+              ? 'Your data has been successfully submitted!'
+              : errorMessage}
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDialogClose} color="primary">Close</Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }

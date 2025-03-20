@@ -1,10 +1,10 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { Button, TextField, Typography, Grid, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import { multiStepContext } from '../../StepContex';
-import { getOnboardingConfig } from '../../services/api';
+import { getOnboardingConfig, submitUserDetails } from '../../services/api';
 
 function PageThree() {
-  const { setStep, userData, setUserData, submitData } = useContext(multiStepContext);
+  const { setStep, userData, setUserData } = useContext(multiStepContext);
   const [page2Components, setPage2Components] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [submitStatus, setSubmitStatus] = useState('');
@@ -27,14 +27,15 @@ function PageThree() {
   }, []);
 
   const handleSubmit = async () => {
-      const response = await submitData(userData);
-      if (response.success) {
-        setSubmitStatus('success');
-        setErrorMessage('');
-      } else {
-        setSubmitStatus('failure');
-        setErrorMessage(response.message || 'An unknown error occurred.');
-      }
+    setUserData({ id: JSON.parse(sessionStorage.getItem('sessionId')).id });
+    const response = await submitUserDetails(userData);
+    if (response.success) {
+      setSubmitStatus('success');
+      setErrorMessage('');
+    } else {
+      setSubmitStatus('failure');
+      setErrorMessage(response.message || 'An unknown error occurred.');
+    }
     setOpenDialog(true);
   };
 
@@ -44,10 +45,17 @@ function PageThree() {
 
   const isSideBySide = isAddressPresent && (isAboutMePresent || isBirthdatePresent);
 
+  const updateUserDataAndSession = (newUserData) => {
+    setUserData(newUserData);
+    sessionStorage.setItem('sessionData', JSON.stringify(newUserData));
+  };
+
   const handleDialogClose = () => {
     setOpenDialog(false);
     setUserData('');
+    sessionStorage.clear();
     setStep(1);
+
   };
 
   return (
@@ -60,28 +68,28 @@ function PageThree() {
               label="Street"
               margin="normal"
               value={userData['streetAddress'] || ''}
-              onChange={(e) => setUserData({ ...userData, 'streetAddress': e.target.value })}
+              onChange={(e) => updateUserDataAndSession({ ...userData, 'streetAddress': e.target.value })}
               fullWidth
             />
             <TextField
               label="City"
               margin="normal"
               value={userData['city'] || ''}
-              onChange={(e) => setUserData({ ...userData, 'city': e.target.value })}
+              onChange={(e) => updateUserDataAndSession({ ...userData, 'city': e.target.value })}
               fullWidth
             />
             <TextField
               label="State"
               margin="normal"
               value={userData['state'] || ''}
-              onChange={(e) => setUserData({ ...userData, 'state': e.target.value })}
+              onChange={(e) => updateUserDataAndSession({ ...userData, 'state': e.target.value })}
               fullWidth
             />
             <TextField
               label="Zip Code"
               margin="normal"
               value={userData['zipCode'] || ''}
-              onChange={(e) => setUserData({ ...userData, 'zipCode': e.target.value })}
+              onChange={(e) => updateUserDataAndSession({ ...userData, 'zipCode': e.target.value })}
               onKeyDown={(e) => {
                 if (!/[0-9]/.test(e.key) && e.key !== 'Backspace' && e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') {
                   e.preventDefault();
@@ -99,10 +107,12 @@ function PageThree() {
                 <Typography variant="h6" className="section-heading">About Me</Typography>
                 <TextField
                   label="About Me"
-                  margin="normal"
                   value={userData['aboutMe'] || ''}
-                  onChange={(e) => setUserData({ ...userData, 'aboutMe': e.target.value })}
+                  onChange={(e) => updateUserDataAndSession({ ...userData, aboutMe: e.target.value })}
                   fullWidth
+                  multiline
+                  rows={4} // Adjust rows as needed
+                  variant="outlined"
                 />
               </>
             )}
@@ -118,7 +128,7 @@ function PageThree() {
                     shrink: true,
                   }}
                   value={userData['birthdate'] || ''}
-                  onChange={(e) => setUserData({ ...userData, 'birthdate': e.target.value })}
+                  onChange={(e) => updateUserDataAndSession({ ...userData, 'birthdate': e.target.value })}
                   fullWidth
                 />
               </div>
@@ -131,7 +141,13 @@ function PageThree() {
         <Button
           variant="outlined"
           color="primary"
-          onClick={() => setStep(2)}
+          onClick={() => {
+            const userStepToSave = {
+              step: 2,
+            };
+            sessionStorage.setItem('sessionStep', JSON.stringify(userStepToSave));
+            setStep(2)
+          }}
           fullWidth
           className="nav-button"
         >

@@ -70,8 +70,8 @@ export const submitUserData = async (userData) => {
     }
   } catch (error) {
     if (error.response) {
-      return { 
-        success: false, 
+      return {
+        success: false,
         message: error.response.data
       };
     } else {
@@ -79,3 +79,25 @@ export const submitUserData = async (userData) => {
     }
   }
 };
+
+export const submitUserDetails = async (userData) => {
+  try {
+    const response = await axios.patch(API_URL_USER, userData);
+    console.log(userData);
+    if (response.status === 200) {
+      return { success: true, message: response.data };
+    } else {
+      return { success: false, message: response.data };
+    }
+  } catch (error) {
+    if (error.response) {
+      return {
+        success: false,
+        message: error.response.data
+      };
+    } else {
+      return { success: false, message: 'No response from server. Please try again.' };
+    }
+  }
+};
+

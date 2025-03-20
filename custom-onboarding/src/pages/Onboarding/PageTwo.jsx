@@ -30,6 +30,15 @@ function PageTwo() {
 
   const isSideBySide = isAddressPresent && (isAboutMePresent || isBirthdatePresent);
 
+  const updateUserDataAndSession = (newUserData) => {
+    const userStepToSave = {
+      step: 3,
+    };
+    setUserData(newUserData);
+    sessionStorage.setItem('sessionStep', JSON.stringify(userStepToSave));
+    sessionStorage.setItem('sessionData', JSON.stringify(newUserData));
+  };
+
   return (
     <div className="form-container">
       <Grid container spacing={4}>
@@ -40,28 +49,28 @@ function PageTwo() {
               label="Street"
               margin="normal"
               value={userData['streetAddress'] || ''}
-              onChange={(e) => setUserData({ ...userData, 'streetAddress': e.target.value })}
+              onChange={(e) => updateUserDataAndSession({ ...userData, 'streetAddress': e.target.value })}
               fullWidth
             />
             <TextField
               label="City"
               margin="normal"
               value={userData['city'] || ''}
-              onChange={(e) => setUserData({ ...userData, 'city': e.target.value })}
+              onChange={(e) => updateUserDataAndSession({ ...userData, 'city': e.target.value })}
               fullWidth
             />
             <TextField
               label="State"
               margin="normal"
               value={userData['state'] || ''}
-              onChange={(e) => setUserData({ ...userData, 'state': e.target.value })}
+              onChange={(e) => updateUserDataAndSession({ ...userData, 'state': e.target.value })}
               fullWidth
             />
             <TextField
               label="Zip Code"
               margin="normal"
               value={userData['zipCode'] || ''}
-              onChange={(e) => setUserData({ ...userData, 'zipCode': e.target.value })}
+              onChange={(e) => updateUserDataAndSession({ ...userData, 'zipCode': e.target.value })}
               onKeyDown={(e) => {
                 if (!/[0-9]/.test(e.key) && e.key !== 'Backspace' && e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') {
                   e.preventDefault();
@@ -78,10 +87,12 @@ function PageTwo() {
                 <Typography variant="h6" className="section-heading">About Me</Typography>
                 <TextField
                   label="About Me"
-                  margin="normal"
                   value={userData['aboutMe'] || ''}
-                  onChange={(e) => setUserData({ ...userData, 'aboutMe': e.target.value })}
+                  onChange={(e) => updateUserDataAndSession({ ...userData, aboutMe: e.target.value })}
                   fullWidth
+                  multiline
+                  rows={4} // Adjust rows as needed
+                  variant="outlined"
                 />
               </>
             )}
@@ -96,7 +107,7 @@ function PageTwo() {
                     shrink: true,
                   }}
                   value={userData['birthdate'] || ''}
-                  onChange={(e) => setUserData({ ...userData, 'birthdate': e.target.value })}
+                  onChange={(e) => updateUserDataAndSession({ ...userData, 'birthdate': e.target.value })}
                   fullWidth
                 />
               </div>
@@ -106,18 +117,15 @@ function PageTwo() {
       </Grid>
       <div className="button-container">
         <Button
-          variant="outlined"
-          color="primary"
-          onClick={() => setStep(1)}
-          fullWidth
-          className="nav-button"
-        >
-          Back
-        </Button>
-        <Button
           variant="contained"
           color="primary"
-          onClick={() => setStep(3)}
+          onClick={() => {
+            const userStepToSave = {
+              step: 3,
+            };
+            sessionStorage.setItem('sessionStep', JSON.stringify(userStepToSave));
+            setStep(3)
+          }}
           fullWidth
           className="nav-button"
         >
